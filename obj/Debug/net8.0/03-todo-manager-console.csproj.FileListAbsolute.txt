@@ -1,0 +1,15 @@
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.AssemblyInfoInputs.cache
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.AssemblyInfo.cs
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.csproj.CoreCompileInputs.cache
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\bin\Debug\net8.0\TodoManagerConsole.exe
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\bin\Debug\net8.0\TodoManagerConsole.deps.json
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\bin\Debug\net8.0\TodoManagerConsole.runtimeconfig.json
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\bin\Debug\net8.0\TodoManagerConsole.dll
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\bin\Debug\net8.0\TodoManagerConsole.pdb
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\TodoManagerConsole.dll
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\refint\TodoManagerConsole.dll
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\TodoManagerConsole.pdb
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.genruntimeconfig.cache
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\ref\TodoManagerConsole.dll
+C:\Users\Andrin\OneDrive - Alte Kantonsschule Aarau\Desktop\Portfolio_website\projects\03-todo-manager-console\obj\Debug\net8.0\03-todo-manager-console.sourcelink.json
