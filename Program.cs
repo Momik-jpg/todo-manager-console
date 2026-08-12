@@ -2,10 +2,19 @@ using TodoManagerConsole.Models;
 using TodoManagerConsole.Services;
 using TodoManagerConsole.Storage;
 
-var storagePath = Path.Combine(Directory.GetCurrentDirectory(), "data", "todos.json");
+var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+var storagePath = Path.Combine(appDataDirectory, "TodoManagerConsole", "todos.json");
 ITodoService todoService = new TodoService(new TodoList(), new FileStorage(storagePath));
 
-await todoService.InitializeAsync();
+try
+{
+    await todoService.InitializeAsync();
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine($"Die gespeicherten ToDos konnten nicht geladen werden: {ex.Message}");
+    return;
+}
 
 var shouldRun = true;
 
@@ -23,6 +32,12 @@ while (shouldRun)
 
     Console.Write("Auswahl: ");
     var choice = Console.ReadLine();
+
+    if (choice is null)
+    {
+        Console.WriteLine("Eingabe beendet.");
+        break;
+    }
 
     Console.WriteLine();
 

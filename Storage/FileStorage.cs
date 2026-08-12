@@ -36,7 +36,26 @@ public sealed class FileStorage : IFileStorage
             Directory.CreateDirectory(directory);
         }
 
-        await using var stream = File.Create(_filePath);
-        await JsonSerializer.SerializeAsync(stream, items, JsonOptions);
+        var temporaryPath = $"{_filePath}.{Guid.NewGuid():N}.tmp";
+        try
+        {
+            await using (var stream = new FileStream(
+                temporaryPath,
+                FileMode.CreateNew,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize: 4096,
+                FileOptions.Asynchronous | FileOptions.WriteThrough))
+            {
+                await JsonSerializer.SerializeAsync(stream, items, JsonOptions);
+                await stream.FlushAsync();
+            }
+
+            File.Move(temporaryPath, _filePath, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(temporaryPath);
+        }
     }
 }

@@ -1,0 +1,7 @@
+.vs/
+.serena/
+bin/
+obj/
+TestResults/
+*.user
+*.suo

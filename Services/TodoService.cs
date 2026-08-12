@@ -49,8 +49,7 @@ public sealed class TodoService : ITodoService
         }
 
         var item = TodoItem.Create(title, description);
-        _todoList.Add(item);
-        await PersistAsync();
+        await PersistThenReplaceAsync(_todoList.Items.Append(item));
 
         return (true, "ToDo wurde erstellt.");
     }
@@ -63,28 +62,28 @@ public sealed class TodoService : ITodoService
             return (false, validationError);
         }
 
-        var item = _todoList.FindById(id);
-        if (item is null)
+        if (_todoList.FindById(id) is null)
         {
             return (false, "ToDo nicht gefunden.");
         }
 
-        item.Update(title, description);
-        await PersistAsync();
+        var updatedItems = CloneItems();
+        updatedItems.Single(item => item.Id == id).Update(title, description);
+        await PersistThenReplaceAsync(updatedItems);
 
         return (true, "ToDo wurde aktualisiert.");
     }
 
     public async Task<(bool Success, string Message)> SetCompletedAsync(Guid id, bool completed)
     {
-        var item = _todoList.FindById(id);
-        if (item is null)
+        if (_todoList.FindById(id) is null)
         {
             return (false, "ToDo nicht gefunden.");
         }
 
-        item.SetCompleted(completed);
-        await PersistAsync();
+        var updatedItems = CloneItems();
+        updatedItems.Single(item => item.Id == id).SetCompleted(completed);
+        await PersistThenReplaceAsync(updatedItems);
 
         var statusText = completed ? "erledigt" : "offen";
         return (true, $"Status wurde auf '{statusText}' gesetzt.");
@@ -92,19 +91,30 @@ public sealed class TodoService : ITodoService
 
     public async Task<(bool Success, string Message)> DeleteAsync(Guid id)
     {
-        var removed = _todoList.Remove(id);
-        if (!removed)
+        if (_todoList.FindById(id) is null)
         {
             return (false, "ToDo nicht gefunden.");
         }
 
-        await PersistAsync();
+        await PersistThenReplaceAsync(_todoList.Items.Where(item => item.Id != id));
         return (true, "ToDo wurde gelöscht.");
     }
 
-    private async Task PersistAsync()
+    private List<TodoItem> CloneItems()
     {
-        var payload = _todoList.Items.Select(item => new TodoStorageModel
+        return _todoList.Items.Select(item => new TodoItem(
+            item.Id,
+            item.Title,
+            item.Description,
+            item.IsCompleted,
+            item.CreatedAt,
+            item.CompletedAt)).ToList();
+    }
+
+    private async Task PersistThenReplaceAsync(IEnumerable<TodoItem> candidateItems)
+    {
+        var candidates = candidateItems.ToList();
+        var payload = candidates.Select(item => new TodoStorageModel
         {
             Id = item.Id,
             Title = item.Title,
@@ -112,9 +122,10 @@ public sealed class TodoService : ITodoService
             IsCompleted = item.IsCompleted,
             CreatedAt = item.CreatedAt,
             CompletedAt = item.CompletedAt
-        });
+        }).ToList();
 
         await _fileStorage.SaveAsync(payload);
+        _todoList.ReplaceAll(candidates);
     }
 
     private static string? ValidateTitle(string title)
