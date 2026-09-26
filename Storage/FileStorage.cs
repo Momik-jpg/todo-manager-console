@@ -16,16 +16,28 @@ public sealed class FileStorage : IFileStorage
         _filePath = filePath;
     }
 
+    public string? LastRecoveryBackupPath { get; private set; }
+
     public async Task<IReadOnlyList<TodoStorageModel>> LoadAsync()
     {
+        LastRecoveryBackupPath = null;
+
         if (!File.Exists(_filePath))
         {
             return Array.Empty<TodoStorageModel>();
         }
 
-        await using var stream = File.OpenRead(_filePath);
-        var items = await JsonSerializer.DeserializeAsync<List<TodoStorageModel>>(stream, JsonOptions);
-        return items ?? new List<TodoStorageModel>();
+        try
+        {
+            await using var stream = File.OpenRead(_filePath);
+            var items = await JsonSerializer.DeserializeAsync<List<TodoStorageModel>>(stream, JsonOptions);
+            return items ?? new List<TodoStorageModel>();
+        }
+        catch (JsonException)
+        {
+            LastRecoveryBackupPath = PreserveCorruptFile();
+            return Array.Empty<TodoStorageModel>();
+        }
     }
 
     public async Task SaveAsync(IEnumerable<TodoStorageModel> items)
@@ -57,5 +69,12 @@ public sealed class FileStorage : IFileStorage
         {
             File.Delete(temporaryPath);
         }
+    }
+
+    private string PreserveCorruptFile()
+    {
+        string backupPath = $"{_filePath}.corrupt-{DateTime.UtcNow:yyyyMMddHHmmssfff}-{Guid.NewGuid():N}.bak";
+        File.Move(_filePath, backupPath);
+        return backupPath;
     }
 }
