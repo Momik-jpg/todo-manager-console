@@ -10,8 +10,10 @@ public sealed class TodoList
 
     public void ReplaceAll(IEnumerable<TodoItem> items)
     {
+        ArgumentNullException.ThrowIfNull(items);
+        var replacements = items.ToList();
         _items.Clear();
-        _items.AddRange(items);
+        _items.AddRange(replacements);
     }
 
     public void Add(TodoItem item)
