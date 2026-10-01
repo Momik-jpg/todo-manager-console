@@ -10,6 +10,9 @@ public sealed class FileStorage : IFileStorage
     };
 
     private readonly string _filePath;
+    private bool _loadFailed;
+
+    public string? LastRecoveryBackupPath { get; private set; }
 
     public FileStorage(string filePath)
     {
@@ -18,18 +21,44 @@ public sealed class FileStorage : IFileStorage
 
     public async Task<IReadOnlyList<TodoStorageModel>> LoadAsync()
     {
-        if (!File.Exists(_filePath))
+        LastRecoveryBackupPath = null;
+        _loadFailed = true;
+        try
         {
+            if (!File.Exists(_filePath))
+            {
+                _loadFailed = false;
+                return Array.Empty<TodoStorageModel>();
+            }
+
+            await using var stream = File.OpenRead(_filePath);
+            var items = await JsonSerializer.DeserializeAsync<List<TodoStorageModel>>(stream, JsonOptions);
+            if (items is null || items.Any(item => item is null))
+            {
+                throw new JsonException("Die ToDo-Datei muss eine Liste mit gültigen Einträgen enthalten.");
+            }
+
+            _loadFailed = false;
+            return items;
+        }
+        catch (JsonException)
+        {
+            // The read stream has been disposed before moving the file (also on Windows).
+            var backupPath = $"{_filePath}.corrupt-{DateTime.UtcNow:yyyyMMddTHHmmssfffZ}-{Guid.NewGuid():N}.json";
+            File.Move(_filePath, backupPath, overwrite: false);
+            LastRecoveryBackupPath = backupPath;
+            _loadFailed = false;
             return Array.Empty<TodoStorageModel>();
         }
-
-        await using var stream = File.OpenRead(_filePath);
-        var items = await JsonSerializer.DeserializeAsync<List<TodoStorageModel>>(stream, JsonOptions);
-        return items ?? new List<TodoStorageModel>();
     }
 
     public async Task SaveAsync(IEnumerable<TodoStorageModel> items)
     {
+        if (_loadFailed)
+        {
+            throw new InvalidOperationException("Speichern ist nach einem Ladefehler gesperrt. Die Originaldatei bleibt erhalten.");
+        }
+
         var directory = Path.GetDirectoryName(_filePath);
         if (!string.IsNullOrWhiteSpace(directory))
         {
