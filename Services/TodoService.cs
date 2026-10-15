@@ -18,7 +18,12 @@ public sealed class TodoService : ITodoService
     {
         var storedItems = await _fileStorage.LoadAsync();
         var loadedItems = storedItems.Select(item =>
-            new TodoItem(item.Id, item.Title, item.Description, item.IsCompleted, item.CreatedAt, item.CompletedAt));
+            new TodoItem(item.Id, item.Title, item.Description, item.IsCompleted, item.CreatedAt, item.CompletedAt)).ToList();
+
+        if (loadedItems.Select(item => item.Id).Distinct().Count() != loadedItems.Count)
+        {
+            throw new InvalidDataException("Die gespeicherten ToDos enthalten doppelte IDs. Bitte prüfe die Datei, bevor du sie erneut lädst.");
+        }
 
         _todoList.ReplaceAll(loadedItems);
     }
@@ -143,4 +148,3 @@ public sealed class TodoService : ITodoService
         return null;
     }
 }
-
