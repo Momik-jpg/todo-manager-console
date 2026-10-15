@@ -10,6 +10,18 @@ Aufgaben werden atomar als JSON im lokalen Anwendungsordner gespeichert und beim
 - Suche über Titel und Beschreibung
 - automatische Speicherung unter `%LOCALAPPDATA%/TodoManagerConsole/todos.json`
 - Schutz der bestehenden Datei, falls ein Speichervorgang fehlschlägt
+- Wiederherstellung nach beschädigtem JSON mit Sicherung der Originaldatei
+
+## Beschädigte Datendatei
+
+Bei ungültigem oder leerem JSON wird die Originaldatei unverändert in eine
+eindeutige Sicherungsdatei neben `todos.json` verschoben. Die Konsole zeigt den
+Sicherungspfad an; danach kann mit einer leeren Liste weitergearbeitet werden.
+Auch `null` und Listen mit `null`-Einträgen werden als beschädigt behandelt.
+
+Gewöhnliche Lese- und Berechtigungsfehler führen weiterhin zum Abbruch.
+Schlägt die Sicherung fehl, bleibt Speichern gesperrt, bis die Datei erfolgreich
+geladen wurde. Sicherungen werden nicht automatisch gelöscht.
 
 ## Projektaufbau
 - `Models/`: Domänenobjekte

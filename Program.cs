@@ -4,11 +4,17 @@ using TodoManagerConsole.Storage;
 
 var appDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 var storagePath = Path.Combine(appDataDirectory, "TodoManagerConsole", "todos.json");
-ITodoService todoService = new TodoService(new TodoList(), new FileStorage(storagePath));
+var fileStorage = new FileStorage(storagePath);
+ITodoService todoService = new TodoService(new TodoList(), fileStorage);
 
 try
 {
     await todoService.InitializeAsync();
+    if (fileStorage.LastRecoveryBackupPath is { } backupPath)
+    {
+        Console.Error.WriteLine($"Die beschädigte ToDo-Datei wurde gesichert: {backupPath}");
+        Console.Error.WriteLine("Der ToDo-Manager startet mit einer leeren Liste.");
+    }
 }
 catch (Exception ex)
 {
@@ -254,4 +260,3 @@ static void Pause()
     Console.WriteLine("Enter drücken zum Fortfahren...");
     Console.ReadLine();
 }
-
